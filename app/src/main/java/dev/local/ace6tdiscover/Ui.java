@@ -1,0 +1,20 @@
+// SPDX-License-Identifier: GPL-3.0-only
+package dev.local.ace6tdiscover;
+import android.content.*;import android.content.res.*;import android.graphics.*;import android.graphics.drawable.*;import android.view.*;import android.widget.*;
+final class Ui {
+    final Context c;final boolean dark;final int bg,surface,ink,muted,blue,soft,green,amber;
+    Ui(Context c){this.c=c;dark=(c.getResources().getConfiguration().uiMode&Configuration.UI_MODE_NIGHT_MASK)==Configuration.UI_MODE_NIGHT_YES;bg=dark?0xff14151b:0xfff6f5f8;surface=dark?0xd21c1e27:0xeaffffff;ink=dark?0xfff5f5fa:0xff17212e;muted=dark?0xffd5d8e4:0xff444b57;soft=dark?0xdd2b2d39:0xe9f0eff5;blue=dark?0xffa4c0ff:0xff2868ef;green=dark?0xff8ee0bf:0xff178b65;amber=dark?0xffffd8a8:0xff9b5e0f;}
+    View wallpaper(View content){FrameLayout layers=new FrameLayout(c);layers.setBackgroundColor(bg);ImageView picture=new ImageView(c);picture.setImageResource(R.drawable.maid_background);picture.setScaleType(ImageView.ScaleType.CENTER_CROP);picture.setRenderEffect(RenderEffect.createBlurEffect(d(12),d(12),Shader.TileMode.MIRROR));layers.addView(picture,new FrameLayout.LayoutParams(-1,-1));View shade=new View(c);GradientDrawable tint=new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,dark?new int[]{0xb8101118,0xa8101118,0xd2101118}:new int[]{0xd9f8f7fa,0xc7f8f7fa,0xe5f8f7fa});shade.setBackground(tint);layers.addView(shade,new FrameLayout.LayoutParams(-1,-1));layers.addView(content,new FrameLayout.LayoutParams(-1,-1));return layers;}
+    int d(float n){return Math.round(n*c.getResources().getDisplayMetrics().density);}
+    GradientDrawable round(int color,int radius){GradientDrawable g=new GradientDrawable();g.setColor(color);g.setCornerRadius(d(radius));return g;}
+    LinearLayout column(){LinearLayout l=new LinearLayout(c);l.setOrientation(1);return l;}
+    LinearLayout row(){LinearLayout l=new LinearLayout(c);l.setOrientation(0);l.setGravity(Gravity.CENTER_VERTICAL);return l;}
+    TextView text(String s,int size,int color,boolean bold){TextView t=new TextView(c);t.setText(s);t.setTextSize(size);t.setTextColor(color);t.setTypeface(Typeface.create("sans-serif",bold?Typeface.BOLD:Typeface.NORMAL));t.setLineSpacing(d(2),1);return t;}
+    void add(LinearLayout p,View v,int bottom){LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,-2);lp.bottomMargin=d(bottom);p.addView(v,lp);}
+    LinearLayout card(){LinearLayout l=column();l.setPadding(d(20),d(19),d(20),d(19));GradientDrawable glass=round(surface,26);glass.setStroke(d(1),dark?0x18ffffff:0x8cffffff);l.setBackground(glass);return l;}
+    TextView button(String title,boolean primary,Runnable run){TextView t=text(title,15,primary?0xffffffff:blue,true);t.setGravity(Gravity.CENTER);t.setMinHeight(d(52));t.setPadding(d(16),d(13),d(16),d(13));t.setBackground(new RippleDrawable(ColorStateList.valueOf(primary?0x28ffffff:0x162868ef),round(primary?0xff2868ef:soft,18),null));t.setClickable(true);t.setFocusable(true);t.setOnClickListener(v->run.run());return t;}
+    void heading(LinearLayout p,String title,String description){add(p,text(title,29,ink,true),12);add(p,text(description,15,muted,false),22);}
+    void note(LinearLayout p,String title,String body){LinearLayout l=card();add(l,text(title,16,ink,true),7);add(l,text(body,14,muted,false),0);add(p,l,14);}
+    void status(LinearLayout p,String title,String description,int tone){LinearLayout l=card();GradientDrawable g=new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{dark?0xd82c2c38:0xeffdfcff,dark?0xcf20222c:0xe6f2f0f7});g.setCornerRadius(d(28));g.setStroke(d(1),dark?0x24ffffff:0xc0ffffff);l.setBackground(g);add(l,text("●  "+title,15,tone==2?green:tone==1?blue:amber,true),10);add(l,text(description,14,muted,false),0);add(p,l,17);}
+    View appIcon(String pkg){ImageView i=new ImageView(c);try{i.setImageDrawable(c.getPackageManager().getApplicationIcon(pkg));}catch(Exception e){i.setImageResource(android.R.drawable.sym_def_app_icon);}i.setScaleType(ImageView.ScaleType.FIT_CENTER);return i;}
+}
